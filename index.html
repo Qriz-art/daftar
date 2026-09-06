@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Open PO SMIK FANS</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff;
+      color: #000;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    header {
+      text-align: center;
+      padding: 30px 0 20px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      color: #000;
+      margin-bottom: 8px;
+    }
+
+    header p { color: #888; font-size: 0.95rem; }
+
+    /* Stats */
+    .stats {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      background: #f5f5f5;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 16px 24px;
+      text-align: center;
+      min-width: 130px;
+    }
+
+    .stat-card .num {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .stat-card .label {
+      font-size: 0.78rem;
+      color: #888;
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      background: #f5f5f5;
+      color: #000;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    .search-box::placeholder { color: #999; }
+    .search-box:focus { border-color: #333; }
+
+    select {
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      background: #f5f5f5;
+      color: #000;
+      font-size: 0.9rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    select option { background: #fff; color: #222; }
+
+    /* Table */
+    .table-wrap {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead th {
+      background: #f5f5f5;
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #555;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    thead th:hover { background: #eee; }
+
+    tbody tr {
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+
+    tbody tr:hover { background: #f9f9f9; }
+
+    tbody td {
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      color: #000;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-paid {
+      background: rgba(46, 213, 115, 0.2);
+      color: #2ed573;
+      border: 1px solid rgba(46, 213, 115, 0.3);
+    }
+
+    .badge-unpaid {
+      background: rgba(255, 71, 87, 0.2);
+      color: #ff4757;
+      border: 1px solid rgba(255, 71, 87, 0.3);
+    }
+
+    .badge-partial {
+      background: rgba(255, 165, 2, 0.2);
+      color: #ffa502;
+      border: 1px solid rgba(255, 165, 2, 0.3);
+    }
+
+    .color-hitam {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #222;
+      border: 1px solid #555;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    .color-putih {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid #ccc;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 40px;
+      color: #999;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      color: #aaa;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 700px) {
+      header h1 { font-size: 1.4rem; }
+      .stats { gap: 8px; }
+      .stat-card { min-width: 100px; padding: 12px 16px; }
+      .stat-card .num { font-size: 1.4rem; }
+      thead th, tbody td { padding: 10px 10px; font-size: 0.8rem; }
+      .table-wrap { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>👕 Daftar Open PO SMIK FANS</h1>
+      <p id="subtitle">Loading data...</p>
+    </header>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="controls">
+      <input type="text" class="search-box" id="searchInput" placeholder="🔍 Cari nama, kelas, jurusan...">
+      <select id="filterStatus">
+        <option value="all">Semua Status</option>
+        <option value="paid">✅ Lunas</option>
+        <option value="partial">☑️ DP / Sebagian</option>
+        <option value="unpaid">❌ Belum Bayar</option>
+      </select>
+      <select id="filterColor">
+        <option value="all">Semua Warna</option>
+        <option value="hitam">⬛ Hitam</option>
+        <option value="putih">⬜ Putih</option>
+      </select>
+      <select id="filterSize">
+        <option value="all">Semua Ukuran</option>
+      </select>
+      <select id="filterSleeve">
+        <option value="all">Semua Lengan</option>
+        <option value="Panjang">🧴 Panjang (LP)</option>
+        <option value="Pendek">👕 Pendek</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th onclick="sortBy('name')">Nama ↕</th>
+            <th onclick="sortBy('grade')">Kelas ↕</th>
+            <th onclick="sortBy('size')">Ukuran ↕</th>
+            <th onclick="sortBy('color')">Warna ↕</th>
+            <th onclick="sortBy('sleeve')">Lengan ↕</th>
+            <th onclick="sortBy('status')">Status ↕</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <footer>
+      SMIK FANS Open PO List &bull; Dibuat dengan ❤️
+    </footer>
+  </div>
+
+  <script>
+    // Raw data from daftar.txt
+    const rawLines = `1.Putra XII KKLP 3 (L) Hitam✅
+2.Andra XII KLLP 3 (M) Hitam✅
+3.koboy Xll TKJ 3 (XL) Hitam
+4.rawwwd XII DKV 1 (L) Hitam
+5.qillat XI KKKR 2 (L) Hitam
+6.Nopal XI KKLP 2 (L) Putih
+7.bayu X DPK 3 (L) Hitam
+8.nino X DPK 3 (L) hitam
+9.irham X DPK 3(L) putih
+10.zahrul X DPK 3 (M) putih☑️
+11.fakhri X TKJ 2 (L) hitam☑️
+12.syauqi X DKV 1 (M) hitam
+13.arizqi X DPK 3 (XL) hitam ☑️
+14.Aril X DPK 3 (L) PUTIH
+15iyan X TF 2 (M) hitam☑️
+16.Fardan X DPK 3 (L) hitam
+17.Ulin X TKJ 1 (L) hitam
+18.zain X TF 2 (M) hitam
+19.mumtaz X DPK 3 (L) hitam✅
+20.wibi X DPK 3 (L) putih
+21.Dion X DPK 3 (XL) putih
+22.arbi X DPK5 (L) putih
+23.alip X DKV 1 (L) hitam
+24.abna X DPK 5 (L) hitam
+25.repan X TJKT 3 (L) PUTIH 50k ☑️
+26.reza x DPK 5(L)HITAM
+27.dimas x DPK 6(L)putih
+28.tiyo x DPK 5 (L) hitam
+29.faqih x DPK 3(L) hitam
+30.parhan X DPK 3 (L) hitam☑️
+31.ulya X dpk 6 (M) hitam
+32. Dia X dpk 6 (M)hitam
+33.kyla X dpk 6 (L) hitam
+34,ramzi XI KKKR 2 (XL) Hitam✅
+35.damuk XI KKLP 3 (L) Putih ☑️
+36.agus XI DKV 2 (XL) Hitam✅
+37.anan XII DTF 1 (L) Hitam✅
+38.rama XII KKLP 3 (L)PUTIH
+39.slamet XI KKKR 2 (L) Putih ☑️ (45)
+40.jansel XI KKLP 2 (L) hitam
+41.pirdan Xl KKLP 2 (L) putih
+42.evan XI KKLP 2 (L) Hitam
+43hendri XI KKLP 3 (L) Hitam
+44.koyor Xl KKLP 3 (M) Putih
+45putra XI KKLP 3 (M) hitam
+46.dika XII DKV 3 (4XL) hitam☑️
+47.Nanda XI KKKR 2 (M) Hitam
+48.azelina XI tf 1 (M) hitam✅
+49.chilaa XI tf 2 (L) hitam ✅
+50. azhar X TKJ 3 (L) hitam
+51. arkan X TKJ 2 (XL) hitam
+52. fajri XI KKKR 1 (XL) hitam
+53. faris XI KKKR 1 (2XL) putih
+54. Ibnu XI KKKR 1 (L) hitam☑️
+55. ⁠Rani X TKJ 3 (M) Putih✅
+56. Misbah XI KKKR 1 (L) hitam
+57. farhan XII KKLP 3 (L) hitam✅
+58. saril Xll KKLP 3 (4XL) hitam✅
+59. fakih fikriz X DPK5 (xl) putih
+60. Azzam 10 TJKT 2(M)hitam
+61. ⁠nospe XII TKJ 3 (L) hitam
+62. Dafa r X DPK3 (M)hitam
+63. Tarmo x dpk 6 (M) hitam☑️
+64. wildan x dpk 6 (M) hitam✅
+65. ubai x dpk 6 (M) hitam
+66. mandala x DTF 1(L) hitam
+67. Fathir X DTF 1 (3XL) HITAM
+68. aqiel x tkj 2 (M) hitam
+69. theoo X DTF 1(L) HITAM LP
+70. ⁠bahil XI KKLP 2 (L) hitam
+71. ⁠hafis X tkj 3 (L) Putih ☑️(40)
+72. ⁠iqbal X tkj 3 (L) Hitam LP☑️
+73. alexx XII KKLP 2 (M) hita☑️
+74. naved XII KKLP 1 (L) hitam✅
+75. dodo XII KKLP 2 (L) putih
+76. Pasya X TF 2 (M) Hitam
+77. Puput Xl TKJ 2 ( L ) hitam
+78. Hida Xl TKJ 2 ( M ) hitam
+79. Lala Xl TKJ 2 ( XL ) hitam
+80. padilah X DTF 1 (L) hitam
+81. jidane X DTF 1 (L) hitam
+82. rikhal 11 kklp 3 (L) hitam
+83. Hilmi XI KKKR 2 (L) Putih,✅
+84. zalpa XI TKJ 3 (M) Hitam LP ☑️
+85. manda XI TKJ 3 (M) Hitam LP
+86. riziq x tf 1 (L) hitam
+87. fhrzi X DPK 4 (L) hitam
+88. Ghazy X dkv 2 (L) putih
+89. hedar XII TKJ 1 (XL) hitam
+90. putra XII KKLP 2(L) PUTIH
+91. demong XII alumni (XL)putih
+92. Nadhif X DKV 1 (M) LP hitam✅
+93. ryan XII TKJ 1 (XL)hitam
+94. super X TKJ 2 (L) hitam
+95. Gaza X TKJ 1 (XL) Hitam
+96. putra XII TKJ 1 (XL) putih
+97. Mahesa XII TF 2 (XL) Hitam
+98. Rafi XII TKJ 1 (L) hitam
+99. ardhan XII TKJ 1 (XL) putih
+100. afham X dkv 1 ( M ) hitam
+101. mahdi X dkv 1 ( L ) hitam
+102. rifki X DPK5 (M) putih
+103.Afgan XII alumni (M) putih LP✅
+104.ariz XI KKLP 2 (XL) Hitam ☑️
+105.Roby Xl kkkr 1 (L) Hitam✅
+106.sandi XI TKJ 3 (L) hitam
+107.Azzam XI TF 2 (L) hitam
+108.pepeng XI KKLP 2 (L) hitam
+109.Bayu X DPK 3 (L) putih
+110. Ardi X Sitenk (L) putih
+111. Syafiq X TJKT 3 (XL) hitam☑️
+112.Arya XI KKLP 2 (L) hitam
+113.arvn XII KKLP 3 M Putih
+114.agung X DPK3 (XL) Hitam✅
+115.akran X DPK 4 (M) hitam✅
+116.rafa X DPK 3 (L) putih
+117.bagas cogan XI KKKR 2 (XL) Hitam
+118. aqil X tf 1 (L) hitam LP
+119.ardi XII LOGAM 1 (XL) HITAM✅
+120.zidan X DPK 4 (L) hitam
+121.asep XI DKV 2 (M) hitam LP
+122.pedruk XI KKKR 2 (XL) Putih✅
+123.Pian XI KKLP 1 (L) Hitam ✅
+124.ejak X DPK 4 (L) HITAM
+125.ataa x DPK 4 (L) hitam✅
+126.dipi X DPK 3 (L) hitam ✅
+127.fahmi X DPK 3 (L) hitam ☑️
+128.tegar XI KKLP 3 (XL) hitam
+129. Boel X KKKR (M) putih
+130.Dya X DPK 6 (L) putih
+131.bilu 12 kkkr 2 (XL) Putih Lp✅
+132.afzan 12 kklp 2 (L) putih
+133.nopal 12 kklp 2 (L) putih
+134.zaki 12 kklp 2 (XL) hitam
+135.anggun X DPK 3 (M) putih LP
+136.nopal XII TKJ 3 (L) hitam☑️`.trim().split('\n');
+
+    // Parse data
+    const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
+
+    function parseLine(line, idx) {
+      line = line.trim();
+      // Extract status
+      let status = 'unpaid';
+      if (/✅/.test(line)) status = 'paid';
+      else if (/☑️/.test(line)) status = 'partial';
+
+      // Extract LP (Lengan Panjang)
+      let sleeve = 'Pendek';
+      if (/\bLP\b|\bLp\b/i.test(line)) sleeve = 'Panjang';
+
+      // Extract color
+      let color = 'hitam';
+      if (/\b(putih)\b/i.test(line)) color = 'putih';
+      else if (/\b(hitam|hita)\b/i.test(line)) color = 'hitam';
+
+      // Extract size (handle both parenthesized and non-parenthesized)
+      let size = '';
+      const sizeMatch = line.match(/\(([^)]*?)\)/);
+      if (sizeMatch) {
+        size = sizeMatch[1].trim().toUpperCase().replace(/\s/g, '');
+      } else {
+        // Try non-parenthesized size like 'M Putih' or 'XL)hitam'
+        const sizeMatch2 = line.match(/\b(S|M|L|XL|XXL|2XL|3XL|4XL)\b/i);
+        if (sizeMatch2) size = sizeMatch2[1].toUpperCase();
+      }
+
+      // Normalize numeric grades to Roman numerals
+      const romanMap = {'10':'X','11':'XI','12':'XII'};
+      let normalized = line
+        .replace(/\b(\d{1,2})\s+(tkj|kklp|kkkr|dpk|dtf|dkv|tf|tjkt|logam)/gi, (m, num, dept) => {
+          return (romanMap[num] || num) + ' ' + dept;
+        })
+        .replace(/\b(\d{1,2})\s+(kkkr|kklp|dpk)/gi, (m, num, dept) => {
+          return (romanMap[num] || num) + ' ' + dept;
+        })
+        // Handle cases like 'Syafiq X TJKT 3' without space before dept number
+        .replace(/\b(tkj|kklp|kkkr|dpk|dtf|dkv|tf|tjkt|logam)(\d)/gi, '$1 $2');
+
+      // Extract name: clean up the line for name extraction
+      let namePart = normalized
+        .replace(/^\d+[.,)\s]*/, '')
+        .replace(/✅|☑️/g, '')
+        .replace(/\bLP\b/gi, '')
+        .replace(/\d+k\b/gi, '')
+        .replace(/\(\d+\)/g, '')
+        .trim();
+
+      // Grade patterns: X, XI, XII (and variations like Xl, Xll, xl)
+      // Match grade that appears BEFORE a department keyword or size parenthesis
+      const gradeRegex = /\b(X{1,2}l{0,2}|xl{0,2}|XII|XI)\s+(?:tkj|kklp|kkkr|dpk|dtf|dkv|tf|tjkt|logam|alumni)/i;
+      let name = namePart;
+      let grade = '';
+      let dept = '';
+
+      const gradeMatch = namePart.match(gradeRegex);
+      if (gradeMatch) {
+        name = namePart.substring(0, gradeMatch.index).trim();
+        grade = gradeMatch[1];
+        // Get dept: everything from the department keyword onward (before size)
+        const afterGrade = namePart.substring(gradeMatch.index + gradeMatch[1].length).trim();
+        dept = afterGrade.replace(/\s*\([^)]*\).*/, '').replace(/[.✅☑️,]/g, '').trim();
+      }
+
+      // Normalize grade to standard format
+      grade = grade.toUpperCase()
+        .replace(/^XL$/, 'XII')
+        .replace(/^XLL$/, 'XII')
+        .replace(/^X$/, 'X');
+
+      // Normalize dept abbreviations
+      dept = dept.toUpperCase()
+        .replace(/^KKR$/, 'KKKR')
+        .replace(/^KLLP$/, 'KKLP')
+        .replace(/^TF$/, 'TF')
+        .replace(/^DKV$/, 'DKV')
+        .replace(/^DTF$/, 'DTF')
+        .replace(/^DPK$/, 'DPK')
+        .replace(/^TKJ$/, 'TKJ')
+        .replace(/^TJKT$/, 'TJKT')
+        .replace(/^LOGAM$/, 'LOGAM')
+        .replace(/^ALUMNI$/, 'ALUMNI')
+        .trim();
+
+      // Clean name
+      name = name.replace(/[.,]/g, '').trim();
+      if (!name) name = 'Unknown';
+
+      return {
+        num: idx + 1,
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        grade: grade,
+        dept: dept,
+        size: size,
+        color: color,
+        sleeve: sleeve,
+        status: status,
+        raw: line
+      };
+    }
+
+    let data = rawLines.map((line, i) => parseLine(line, i));
+
+    // Populate size filter
+    const allSizes = [...new Set(data.map(d => d.size).filter(Boolean))].sort();
+    const sizeSelect = document.getElementById('filterSize');
+    allSizes.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = s;
+      sizeSelect.appendChild(opt);
+    });
+
+    // Render
+    let sortKey = '';
+    let sortAsc = true;
+
+    function render() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('filterStatus').value;
+      const colorFilter = document.getElementById('filterColor').value;
+      const sizeFilter = document.getElementById('filterSize').value;
+      const sleeveFilter = document.getElementById('filterSleeve').value;
+
+      let filtered = data.filter(d => {
+        if (query && !(d.name.toLowerCase().includes(query) ||
+            d.grade.toLowerCase().includes(query) ||
+            d.dept.toLowerCase().includes(query) ||
+            d.raw.toLowerCase().includes(query))) return false;
+        if (statusFilter !== 'all' && d.status !== statusFilter) return false;
+        if (colorFilter !== 'all' && d.color !== colorFilter) return false;
+        if (sizeFilter !== 'all' && d.size.toUpperCase() !== sizeFilter.toUpperCase()) return false;
+        if (sleeveFilter !== 'all' && d.sleeve !== sleeveFilter) return false;
+        return true;
+      });
+
+      // Sort
+      if (sortKey) {
+        filtered.sort((a, b) => {
+          const va = a[sortKey] || '';
+          const vb = b[sortKey] || '';
+          return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+        });
+      }
+
+      // Stats
+      const total = data.length;
+      const paidCount = data.filter(d => d.status === 'paid').length;
+      const partialCount = data.filter(d => d.status === 'partial').length;
+      const unpaidCount = data.filter(d => d.status === 'unpaid').length;
+      const hitamCount = data.filter(d => d.color === 'hitam').length;
+      const putihCount = data.filter(d => d.color === 'putih').length;
+      const panjangCount = data.filter(d => d.sleeve === 'Panjang').length;
+
+      document.getElementById('stats').innerHTML = `
+        <div class="stat-card"><div class="num">${total}</div><div class="label">Total</div></div>
+        <div class="stat-card"><div class="num" style="color:#2ed573">${paidCount}</div><div class="label">Lunas</div></div>
+        <div class="stat-card"><div class="num" style="color:#ffa502">${partialCount}</div><div class="label">DP / Sebagian</div></div>
+        <div class="stat-card"><div class="num" style="color:#ff4757">${unpaidCount}</div><div class="label">Belum Bayar</div></div>
+        <div class="stat-card"><div class="num">${hitamCount} / ${putihCount}</div><div class="label">Hitam / Putih</div></div>
+        <div class="stat-card"><div class="num" style="color:#000">${panjangCount}</div><div class="label">Lengan Panjang</div></div>
+      `;
+
+      document.getElementById('subtitle').textContent = `${filtered.length} dari ${total} pesanan ditampilkan`;
+
+      // Table
+      const tbody = document.getElementById('tableBody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="no-data">😢 Tidak ada data ditemukan</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((d, i) => {
+        const statusBadge = d.status === 'paid'
+          ? '<span class="badge badge-paid">✅ Lunas</span>'
+          : d.status === 'partial'
+          ? '<span class="badge badge-partial">☑️ DP</span>'
+          : '<span class="badge badge-unpaid">❌ Belum</span>';
+
+        const colorIcon = d.color === 'putih'
+          ? '<span class="color-putih"></span>Putih'
+          : '<span class="color-hitam"></span>Hitam';
+
+        const sleeveText = d.sleeve === 'Panjang'
+          ? '<span style="color:#000;font-weight:600">🧴 Panjang</span>'
+          : '<span style="color:#888">👕 Pendek</span>';
+
+        return `<tr>
+          <td>${d.num}</td>
+          <td><strong>${d.name}</strong></td>
+          <td>${d.grade} ${d.dept}</td>
+          <td>${d.size}</td>
+          <td>${colorIcon}</td>
+          <td>${sleeveText}</td>
+          <td>${statusBadge}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function sortBy(key) {
+      if (sortKey === key) sortAsc = !sortAsc;
+      else { sortKey = key; sortAsc = true; }
+      render();
+    }
+
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('input', render);
+    document.getElementById('filterStatus').addEventListener('change', render);
+    document.getElementById('filterColor').addEventListener('change', render);
+    document.getElementById('filterSize').addEventListener('change', render);
+    document.getElementById('filterSleeve').addEventListener('change', render);
+
+    // Initial render
+    render();
+  </script>
+</body>
+</html>
