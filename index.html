@@ -200,6 +200,100 @@
       font-size: 0.8rem;
     }
 
+    /* Breakdown Table */
+    .breakdown-wrap {
+      margin: 16px 0;
+    }
+
+    .breakdown-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      background: #f5f5f5;
+      color: #333;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .breakdown-toggle:hover {
+      background: #e8e8e8;
+      border-color: #bbb;
+    }
+
+    .breakdown-toggle .arrow {
+      transition: transform 0.3s;
+      font-size: 0.7rem;
+    }
+
+    .breakdown-toggle.open .arrow {
+      transform: rotate(180deg);
+    }
+
+    .breakdown-table-wrap {
+      display: none;
+      margin-top: 12px;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .breakdown-table-wrap.show {
+      display: block;
+    }
+
+    .breakdown-table-wrap table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .breakdown-table-wrap thead th {
+      background: #3b5998;
+      color: #fff;
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: none;
+    }
+
+    .breakdown-table-wrap thead th:first-child,
+    .breakdown-table-wrap thead th:nth-child(2) {
+      text-align: left;
+    }
+
+    .breakdown-table-wrap tbody td {
+      padding: 10px 16px;
+      text-align: center;
+      font-size: 0.9rem;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .breakdown-table-wrap tbody td:first-child,
+    .breakdown-table-wrap tbody td:nth-child(2) {
+      text-align: left;
+    }
+
+    .breakdown-table-wrap tbody tr:hover {
+      background: #f9f9f9;
+    }
+
+    .breakdown-table-wrap tbody tr.total-row {
+      background: #e8edf4;
+      font-weight: 700;
+    }
+
+    .breakdown-table-wrap tbody tr.total-row td {
+      border-bottom: none;
+      font-size: 0.95rem;
+    }
+
     @media (max-width: 700px) {
       header h1 { font-size: 1.4rem; }
       .stats { gap: 8px; }
@@ -207,6 +301,9 @@
       .stat-card .num { font-size: 1.4rem; }
       thead th, tbody td { padding: 10px 10px; font-size: 0.8rem; }
       .table-wrap { overflow-x: auto; }
+      .breakdown-table-wrap { overflow-x: auto; }
+      .breakdown-table-wrap thead th,
+      .breakdown-table-wrap tbody td { padding: 8px 10px; font-size: 0.8rem; }
     }
   </style>
 </head>
@@ -218,6 +315,13 @@
     </header>
 
     <div class="stats" id="stats"></div>
+
+    <div class="breakdown-wrap">
+      <button class="breakdown-toggle" id="breakdownToggle" onclick="toggleBreakdown()">
+        📊 Lihat Rincian Ukuran & Warna <span class="arrow">▼</span>
+      </button>
+      <div class="breakdown-table-wrap" id="breakdownTable"></div>
+    </div>
 
     <div class="controls">
       <input type="text" class="search-box" id="searchInput" placeholder="🔍 Cari nama, kelas, jurusan...">
@@ -317,7 +421,7 @@
 49.chilaa XI tf 2 (L) hitam ✅
 50. azhar X TKJ 3 (L) hitam
 51. arkan X TKJ 2 (XL) hitam
-52. fajri XI KKKR 1 (XL) hitam
+52. fajri XI KKKR 1 (XL) hitam✅
 53. faris XI KKKR 1 (2XL) putih
 54. Ibnu XI KKKR 1 (L) hitam☑️
 55. ⁠Rani X TKJ 3 (M) Putih✅
@@ -362,7 +466,7 @@
 94. super X TKJ 2 (L) hitam
 95. Gaza X TKJ 1 (XL) Hitam
 96. putra XII TKJ 1 (XL) putih
-97. Mahesa XII TF 2 (XL) Hitam
+97. Mahesa XI TF 2 (XL) Hitam✅
 98. Rafi XII TKJ 1 (L) hitam
 99. ardhan XII TKJ 1 (XL) putih
 100. afham X dkv 1 ( M ) hitam
@@ -394,7 +498,7 @@
 126.dipi X DPK 3 (L) hitam ✅
 127.fahmi X DPK 3 (L) hitam ☑️
 128.tegar XI KKLP 3 (XL) hitam
-129. Boel X KKKR (M) putih LP
+129. Boel  kkr (M) putih LP☑️
 130.Dya X DPK 6 (L) putih
 131.bilu 12 kkkr 2 (XL) Putih Lp✅
 132.afzan 12 kklp 2 (L) putih
@@ -609,6 +713,90 @@
       if (sortKey === key) sortAsc = !sortAsc;
       else { sortKey = key; sortAsc = true; }
       render();
+    }
+
+    // Breakdown table
+    let breakdownOpen = false;
+
+    function toggleBreakdown() {
+      breakdownOpen = !breakdownOpen;
+      const wrap = document.getElementById('breakdownTable');
+      const btn = document.getElementById('breakdownToggle');
+      if (breakdownOpen) {
+        wrap.classList.add('show');
+        btn.classList.add('open');
+        renderBreakdown();
+      } else {
+        wrap.classList.remove('show');
+        btn.classList.remove('open');
+      }
+    }
+
+    function renderBreakdown() {
+      const colors = ['hitam', 'putih'];
+      const colorLabels = { hitam: 'Hitam', putih: 'Putih' };
+      const sleeveLabels = { Pendek: 'Lengan Pendek', Panjang: 'Lengan Panjang (LP)' };
+      const sleeveKeys = ['Pendek', 'Panjang'];
+
+      // Collect all sizes used
+      const sizeSet = new Set();
+      data.forEach(d => { if (d.size) sizeSet.add(d.size.toUpperCase()); });
+      const allSizes = [...sizeSet].sort((a, b) => {
+        const order = { 'S': 0, 'M': 1, 'L': 2, 'XL': 3, '2XL': 4, '3XL': 5, '4XL': 6 };
+        return (order[a] ?? 99) - (order[b] ?? 99);
+      });
+
+      // Build rows
+      const rows = [];
+      let grandTotalLP = 0, grandTotalLD = 0, grandTotalAll = 0;
+
+      colors.forEach(color => {
+        allSizes.forEach(size => {
+          let ld = 0, lp = 0;
+          data.forEach(d => {
+            if (d.color === color && d.size.toUpperCase() === size) {
+              if (d.sleeve === 'Panjang') lp++;
+              else ld++;
+            }
+          });
+          const total = ld + lp;
+          if (total === 0) return; // skip empty rows
+          rows.push({ color: colorLabels[color], size, ld, lp, total });
+          grandTotalLD += ld;
+          grandTotalLP += lp;
+          grandTotalAll += total;
+        });
+      });
+
+      let html = '<table>';
+      html += '<thead><tr>';
+      html += '<th style="text-align:left">Warna</th>';
+      html += '<th style="text-align:left">Ukuran</th>';
+      html += '<th>Lengan Pendek</th>';
+      html += '<th>Lengan Panjang (LP)</th>';
+      html += '<th>Total</th>';
+      html += '</tr></thead>';
+      html += '<tbody>';
+
+      rows.forEach(r => {
+        html += '<tr>';
+        html += '<td>' + r.color + '</td>';
+        html += '<td>' + r.size + '</td>';
+        html += '<td>' + r.ld + '</td>';
+        html += '<td>' + r.lp + '</td>';
+        html += '<td><strong>' + r.total + '</strong></td>';
+        html += '</tr>';
+      });
+
+      html += '<tr class="total-row">';
+      html += '<td colspan="2" style="text-align:left;font-weight:700">TOTAL KESELURUHAN</td>';
+      html += '<td>' + grandTotalLD + '</td>';
+      html += '<td>' + grandTotalLP + '</td>';
+      html += '<td>' + grandTotalAll + '</td>';
+      html += '</tr>';
+
+      html += '</tbody></table>';
+      document.getElementById('breakdownTable').innerHTML = html;
     }
 
     // Event listeners
